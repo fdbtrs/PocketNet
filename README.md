@@ -16,7 +16,7 @@
  
 ### To-do 
 - [ ] Add pretrained model
-- [ ] Add search code
+- [ ] Add NAS code
 - [ ] Add evaluation results
  
  
