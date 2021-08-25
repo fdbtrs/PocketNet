@@ -15,7 +15,7 @@
     + ./train_kd.sh
  
 ### To-do 
-- [] Add pretrained model
-- [] Add search code
-- [] Add evaluation results
+- [ ] Add pretrained model
+- [ ] Add search code
+- [ ] Add evaluation results
  
