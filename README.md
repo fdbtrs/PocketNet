@@ -14,3 +14,8 @@
 3. Train PocketNet with multi-step template knowledge distillation
     + ./train_kd.sh
  
+### To-do 
+- [] Add pretrained model
+- [] Add search code
+- [] Add evaluation results
+ 

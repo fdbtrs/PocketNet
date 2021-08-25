@@ -1,7 +1,7 @@
 from easydict import EasyDict as edict
 
 config = edict()
-config.dataset = "emoreKD"
+config.dataset = "webface"
 config.embedding_size = 128
 config.sample_rate = 1
 config.fp16 = False
@@ -56,7 +56,7 @@ elif config.dataset == "webface":
     config.num_image = 501195
     config.num_epoch = 34
     config.warmup_epoch = -1
-    config.val_targets = ["lfw", "cfp_fp", "agedb_30"]
+    config.val_targets =  ["lfw", "cfp_fp", "cfp_ff", "agedb_30", "calfw", "cplfw"]
 
     def lr_step_func(epoch):
         return ((epoch + 1) / (4 + 1)) ** 2 if epoch < config.warmup_epoch else 0.1 ** len(
