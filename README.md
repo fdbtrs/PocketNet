@@ -3,7 +3,7 @@
 
 
 ## This is the official repository of the paper: PocketNet: Extreme Lightweight Face Recognition Network using Neural Architecture Search and  Multi-Step Knowledge Distillation
-
+[arxiv](https://arxiv.org/abs/2108.10710)
 
 ### Model Training 
 1. Train PocketNet with ArcFace loss
