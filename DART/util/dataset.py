@@ -40,8 +40,9 @@ class MXFaceDataset(Dataset):
     def __len__(self):
         return len(self.imgidx)
 
+CASIA = "../../../data/fboutros/faces_webface_112x112"
 
-def get_train_dataset(root):
+def get_train_dataset():
     """ returns only the train dataset """
 
     train_trans = transforms.Compose ([
@@ -53,16 +54,27 @@ def get_train_dataset(root):
         transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
     ])
 
+    root = CASIA
 
     trn_data = MXFaceDataset(root_dir=root, transform=train_trans)
+    input_channels = 3
+    input_size = 112
 
-    return trn_data
+    n_classes = 10571
 
-def get_casia_without_crop(root):
+    # assert statements for classes, input_size
+    #assert len(trn_data.classes) == n_classes
+    #assert trn_data[0][0].shape[1] == 112
+
+    return input_size, input_channels, n_classes, trn_data
+
+def get_casia_without_crop():
     trans = transforms.Compose ([
         transforms.ToTensor(),
         transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
     ])
+
+    root = CASIA
 
     data = MXFaceDataset(root_dir=root, transform=trans)
 
