@@ -19,12 +19,12 @@ Eaxtract the dataset and place it in the data folder
 3. Train PocketNet with multi-step template knowledge distillation
     + ./train_kd.sh
 
-| Model  | configuration | log| pretrained model| 
-| ------------- |  ------------- |------------- |------------- |
-| PocketNetS-128 | [Config](https://github.com/fdbtrs/PocketNet/blob/main/config/config_PocketNetS128.py)| [log](https://www.dropbox.com/s/hha0qp63y8w46ng/training.log?dl=0)|[Pretrained-model](https://www.dropbox.com/sh/38mhqa19xx28438/AABw64kuY4ExrE4NAQLLiJJwa?dl=0)  |
-| PocketNetS-256 | [Config](https://github.com/fdbtrs/PocketNet/blob/main/config/config_PocketNetS256.py)| [log](https://www.dropbox.com/s/tenmtzjrghaos75/training.log?dl=0)|[Pretrained-model](https://www.dropbox.com/sh/n2blqt17bg5eh1m/AAAxhWFZ2mC2hveuHzSMy0mma?dl=0) |
-| PocketNetM-128 |[Config](https://github.com/fdbtrs/PocketNet/blob/main/config/config_PocketNetM128.py) | [log](https://www.dropbox.com/s/o0vnxns6hmmj1rg/training.log?dl=0)|[Pretrained-model](https://www.dropbox.com/sh/a8qgqkyryli0nl2/AABPlP5fmiZzlN8IV64BBGica?dl=0)  |
-| PocketNetM-256 | [Config](https://github.com/fdbtrs/PocketNet/blob/main/config/config_PocketNetM256.py)| [log](https://www.dropbox.com/s/lqs47v4rc5g7425/training.log?dl=0) |[Pretrained-model](https://www.dropbox.com/sh/4dz14jgynrmsdgb/AAAsfYtKBXg1tPuK7RwzDbGva?dl=0)  |
+| Model  | Parameters (M)| configuration | log| pretrained model| 
+| ------------- | ------------- |  ------------- |------------- |------------- |
+| PocketNetS-128 |0.92 |[Config](https://github.com/fdbtrs/PocketNet/blob/main/config/config_PocketNetS128.py)| [log](https://www.dropbox.com/s/hha0qp63y8w46ng/training.log?dl=0)|[Pretrained-model](https://www.dropbox.com/sh/38mhqa19xx28438/AABw64kuY4ExrE4NAQLLiJJwa?dl=0)  |
+| PocketNetS-256 |0.99 |[Config](https://github.com/fdbtrs/PocketNet/blob/main/config/config_PocketNetS256.py)| [log](https://www.dropbox.com/s/tenmtzjrghaos75/training.log?dl=0)|[Pretrained-model](https://www.dropbox.com/sh/n2blqt17bg5eh1m/AAAxhWFZ2mC2hveuHzSMy0mma?dl=0) |
+| PocketNetM-128 |1.68 |[Config](https://github.com/fdbtrs/PocketNet/blob/main/config/config_PocketNetM128.py) | [log](https://www.dropbox.com/s/o0vnxns6hmmj1rg/training.log?dl=0)|[Pretrained-model](https://www.dropbox.com/sh/a8qgqkyryli0nl2/AABPlP5fmiZzlN8IV64BBGica?dl=0)  |
+| PocketNetM-256 |1.75 |[Config](https://github.com/fdbtrs/PocketNet/blob/main/config/config_PocketNetM256.py)| [log](https://www.dropbox.com/s/lqs47v4rc5g7425/training.log?dl=0) |[Pretrained-model](https://www.dropbox.com/sh/4dz14jgynrmsdgb/AAAsfYtKBXg1tPuK7RwzDbGva?dl=0)  |
 
 
 ### To-do 
