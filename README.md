@@ -3,13 +3,13 @@
 
 
 ## This is the official repository of the paper:
-###PocketNet: Extreme Lightweight Face Recognition Network using Neural Architecture Search and  Multi-Step Knowledge Distillation
+#### PocketNet: Extreme Lightweight Face Recognition Network using Neural Architecture Search and  Multi-Step Knowledge Distillation
 Paper on arxiv: [arxiv](https://arxiv.org/abs/2108.10710)
 
 ![evaluation](https://raw.githubusercontent.com/fdbtrs/PocketNet/main/logs/tradeoff.png)
 
 
-### Model Training 
+### Face recognition  model training 
 Download [MS1MV2](https://drive.google.com/file/d/1SXS4-Am3bsKSK615qbYdbA_FMVh3sAvR/view?usp=sharing) dataset from [insightface](https://github.com/deepinsight/insightface/tree/master/recognition/_datasets_) on strictly follow the licence distribution
 Eaxtract the dataset and place it in the data folder
 1. Train PocketNet with ArcFace loss
@@ -26,7 +26,7 @@ Eaxtract the dataset and place it in the data folder
 | PocketNetM-128 |1.68 |[Config](https://github.com/fdbtrs/PocketNet/blob/main/config/config_PocketNetM128.py) | [log](https://www.dropbox.com/s/o0vnxns6hmmj1rg/training.log?dl=0)|[Pretrained-model](https://www.dropbox.com/sh/a8qgqkyryli0nl2/AABPlP5fmiZzlN8IV64BBGica?dl=0)  |
 | PocketNetM-256 |1.75 |[Config](https://github.com/fdbtrs/PocketNet/blob/main/config/config_PocketNetM256.py)| [log](https://www.dropbox.com/s/lqs47v4rc5g7425/training.log?dl=0) |[Pretrained-model](https://www.dropbox.com/sh/4dz14jgynrmsdgb/AAAsfYtKBXg1tPuK7RwzDbGva?dl=0)  |
 
-
+### Differentiable architecture search training
 ### To-do 
 - [x] Add pretrained model
 - [x] Training configuration
