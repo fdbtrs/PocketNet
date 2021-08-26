@@ -13,7 +13,15 @@
     + ./train_kd.sh
 3. Train PocketNet with multi-step template knowledge distillation
     + ./train_kd.sh
- 
+
+| Model  | Pretrained model
+| ------------- |  ------------- |
+| PocketNetS-128 | [Pretrained-model](https://www.dropbox.com/sh/38mhqa19xx28438/AABw64kuY4ExrE4NAQLLiJJwa?dl=0)  |
+| PocketNetS-256 |  [Pretrained-model](https://www.dropbox.com/sh/n2blqt17bg5eh1m/AAAxhWFZ2mC2hveuHzSMy0mma?dl=0) |
+| PocketNetM-128 | [Pretrained-model](https://www.dropbox.com/sh/a8qgqkyryli0nl2/AABPlP5fmiZzlN8IV64BBGica?dl=0)  |
+| PocketNetM-256 | [Pretrained-model](https://www.dropbox.com/sh/4dz14jgynrmsdgb/AAAsfYtKBXg1tPuK7RwzDbGva?dl=0)  |
+
+
 ### To-do 
 - [ ] Add pretrained model
 - [ ] Add NAS code

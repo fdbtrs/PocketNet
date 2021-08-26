@@ -1,7 +1,7 @@
 from easydict import EasyDict as edict
 
 config = edict()
-config.dataset = "webface"
+config.dataset = "emoreKD"
 config.embedding_size = 128
 config.sample_rate = 1
 config.fp16 = False
@@ -20,9 +20,8 @@ config.genotypes = dict({
         "softmax_casia": "Genotype(normal=[[('dw_conv_3x3', 0), ('dw_conv_1x1', 1)], [('dw_conv_3x3', 2), ('dw_conv_5x5', 0)], [('dw_conv_3x3', 3), ('dw_conv_3x3', 0)], [('dw_conv_3x3', 4), ('skip_connect', 0)]], normal_concat=range(2, 6), reduce=[[('dw_conv_3x3', 1), ('dw_conv_7x7', 0)], [('skip_connect', 2), ('dw_conv_5x5', 1)], [('max_pool_3x3', 0), ('skip_connect', 2)], [('max_pool_3x3', 0), ('max_pool_3x3', 1)]], reduce_concat=range(2, 6))"    })
 
 # for KD
-config.teacher_pth = "output/iresnet512"
+config.teacher_pth = "output/iresnet128"
 config.teacher_global_step = 295672
-config.teacher_network="resnet"
 # if use pretrained model (not for resume!)
 config.student_pth = ""
 config.student_global_step = 0
