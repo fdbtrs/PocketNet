@@ -1,38 +1,51 @@
 import os
-import torch
-import torchvision.transforms as transforms
-import numpy as np
-from torchvision.datasets import ImageFolder
 from sklearn.model_selection import train_test_split
 
-CASIA_REDUCED = "../dataset/casia/casia_clean_align_reduced"
-CASIA = "../dataset/casia/casia_webface_clean_align"
-LFW = "../dataset/lfw/lfw_align"
-LFW_PAIRS = "../dataset/lfw/pairs.txt"
+import numbers
+import mxnet as mx
+import numpy as np
+import torch
+from torch.utils.data import Dataset
+from torchvision import transforms
 
-class ImageFolderWithPaths(ImageFolder):
-    """Custom dataset that includes image file paths. Extends
-    torchvision.datasets.ImageFolder
-    https://gist.github.com/andrewjong/6b02ff237533b3b2c554701fb53d5c4d
-    """
+class MXFaceDataset(Dataset):
+    def __init__(self, root_dir, transform):
+        super(MXFaceDataset, self).__init__()
+        self.transform = transform
+        self.root_dir = root_dir
+        path_imgrec = os.path.join(root_dir, 'train.rec')
+        path_imgidx = os.path.join(root_dir, 'train.idx')
+        self.imgrec = mx.recordio.MXIndexedRecordIO(path_imgidx, path_imgrec, 'r')
+        s = self.imgrec.read_idx(0)
+        header, _ = mx.recordio.unpack(s)
+        if header.flag > 0:
+            self.header0 = (int(header.label[0]), int(header.label[1]))
+            self.imgidx = np.array(range(1, int(header.label[0])))
+        else:
+            self.imgidx = np.array(list(self.imgrec.keys))
 
-    # override the __getitem__ method. this is the method that dataloader calls
     def __getitem__(self, index):
-        # this is what ImageFolder normally returns 
-        original_tuple = super(ImageFolderWithPaths, self).__getitem__(index)
-        # the image file path
-        path = self.imgs[index][0]
-        # make a new tuple that includes original and the path
-        tuple_with_path = (original_tuple + (path,))
-        return tuple_with_path
+        idx = self.imgidx[index]
+        s = self.imgrec.read_idx(idx)
+        header, img = mx.recordio.unpack(s)
+        label = header.label
+        if not isinstance(label, numbers.Number):
+            label = label[0]
+        label = torch.tensor(label, dtype=torch.long)
+        sample = mx.image.imdecode(img).asnumpy()
+        if self.transform is not None:
+            sample = self.transform(sample)
+        return sample, label
 
-# TODO add other datasets
-# Tested
-def get_train_dataset(name, reduced=False):
+    def __len__(self):
+        return len(self.imgidx)
+
+
+def get_train_dataset(root):
     """ returns only the train dataset """
-    name = name.lower()
 
     train_trans = transforms.Compose ([
+        transforms.ToPILImage(),
         transforms.Resize(128), #  128x128
         transforms.RandomCrop(112), # 
         transforms.RandomHorizontalFlip(), # randomly flipping
@@ -40,53 +53,25 @@ def get_train_dataset(name, reduced=False):
         transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
     ])
 
-    root = CASIA_REDUCED if reduced else CASIA
 
-    trn_data = ImageFolder(root=root, transform=train_trans)
-    input_channels = 3
-    input_size = 112
+    trn_data = MXFaceDataset(root_dir=root, transform=train_trans)
 
-    if reduced:
-        n_classes = 2000
-    else:
-        n_classes = 10575
+    return trn_data
 
-    # assert statements for classes, input_size
-    assert len(trn_data.classes) == n_classes
-    assert trn_data[0][0].shape[1] == 112
-
-    return input_size, input_channels, n_classes, trn_data
-
-def get_casia_without_crop(reduced=False):
+def get_casia_without_crop(root):
     trans = transforms.Compose ([
         transforms.ToTensor(),
         transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
     ])
 
-    root = CASIA_REDUCED if reduced else CASIA
-
-    data = ImageFolder(root=root, transform=trans)
+    data = MXFaceDataset(root_dir=root, transform=trans)
 
     return data
 
 # Tested
-def get_train_val_split(data, val_split=0.2):
+def get_train_val_split(data_idx, data_classes, val_split=0.2):
     """ returns indexes of a split of the dataset in a stratified manner """
-    targets = data.targets
 
-    train_idx, valid_idx = train_test_split(np.arange(len(targets)), test_size=val_split, stratify=targets)
+    train_idx, valid_idx = train_test_split(data_idx, test_size=val_split, stratify=data_classes)
 
     return train_idx, valid_idx
-
-# Tested
-def get_lfw_dataset():
-    """returns the lfw dataset with path"""
-
-    val_trans = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
-    ])
-
-    lfw_data = ImageFolderWithPaths(LFW, transform=val_trans)
-
-    return lfw_data

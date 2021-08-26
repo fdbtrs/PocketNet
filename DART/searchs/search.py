@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader, SubsetRandomSampler
 import utils
 from util.config import SearchConfig
 from util import dataset as dataset
-from models.search_cnn import SearchCNNController
+from models.search_cnn import SearchCNNController, ArcFace
 from searchs.architect import Architect
 from util.visualize import plot
 
@@ -17,8 +17,9 @@ from util.visualize import plot
 config = SearchConfig()
 
 # set device
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu") # maybe this is redundant
+device = "cuda" if torch.cuda.is_available() else "cpu"
+#device = "cpu"
+device = torch.device(device) # maybe this is redundant
 
 # tensorboard
 writer = SummaryWriter(log_dir=os.path.join(config.path, "tb"))
@@ -46,25 +47,51 @@ def main():
         torch.backends.cudnn.benchmark = True # maybe not nescessary???
     
     # get dataset and meta info
-    input_size, input_channels, n_classes, train_data = dataset.get_train_dataset(config.dataset, reduced=False)
+    image_channels=config.images_channels
+    n_classes=config.n_classes
+    train_data = dataset.get_train_dataset(config.root)
     val_data = dataset.get_casia_without_crop(reduced=False)
     # assume that indices of train_data and val_data are the same
 
     # split into train val and get indices of splits
     train_idx, val_idx = dataset.get_train_val_split(train_data, 0.5)
 
+    # load parameters
+    PATH = "searchs/search1WholeData/checkpoint.pth.tar"
+    checkpoint = torch.load(PATH)
+
+    # get weights from linear layer
+    arc_weights = checkpoint["model_state_dict"]["net.linear.weight"]
+
     # setup model
     net_crit = nn.CrossEntropyLoss().to(device)
-    model = SearchCNNController(input_channels, config.init_channels, n_classes, config.layers, net_crit, device_ids=config.gpus)
+    metric_fc = ArcFace(embedding_size=128, classnum=n_classes, s=64, m=0.4, init_weights=arc_weights).to(device)
+
+    model = SearchCNNController(image_channels, config.init_channels, n_classes, config.layers, metric_fc, net_crit, device_ids=config.gpus)
+    model.load_state_dict(checkpoint["model_state_dict"], strict=False)
     model = model.to(device)
 
-    
+    logger.info("Loaded Controller weights")
 
     # weights optimizer
-    w_optim = torch.optim.SGD(model.weights(), config.w_lr, momentum=config.w_momentum, weight_decay=config.w_weight_decay)
+    w_optim = torch.optim.SGD(list(model.weights()) + [metric_fc.kernel], config.w_lr, momentum=config.w_momentum, weight_decay=config.w_weight_decay)
+
+    # remove information from linear layer
+    #grad_info1 = checkpoint["optimizer_w_state_dict"]["state"].pop(1530)
+    #grad_info2 = checkpoint["optimizer_w_state_dict"]["state"].pop(1531)
+    length = len(checkpoint["optimizer_w_state_dict"]["param_groups"][0]["params"])
+    checkpoint["optimizer_w_state_dict"]["param_groups"][0]["params"] = checkpoint["optimizer_w_state_dict"]["param_groups"][0]["params"][:length - 1]
+    
+    w_optim.load_state_dict(checkpoint["optimizer_w_state_dict"])
+
+    logger.info("Loaded Optimizer w")
 
     # alphas optimizer
     alpha_optim = torch.optim.Adam(model.alphas(), config.alpha_lr, betas=(0.5, 0.999), weight_decay=config.alpha_weight_decay)
+
+    alpha_optim.load_state_dict(checkpoint["optimizer_a_state_dict"])
+
+    logger.info("Loaded Optimizer a")
 
     # loader for train and val data
     train_loader = DataLoader(
@@ -85,10 +112,15 @@ def main():
         drop_last=False
     )
 
+    resumeEpoch = checkpoint["epoch"]
+    #resumeEpoch = 0
+
 
     lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-        w_optim, config.epochs, eta_min=config.w_lr_min
+        w_optim, config.epochs + resumeEpoch , eta_min=config.w_lr_min, last_epoch=resumeEpoch
     )
+
+    logger.info("Loaded Learning Rate Scheduler")
 
     architect = Architect(model, config.w_momentum, config.w_weight_decay)
 
@@ -129,7 +161,7 @@ def main():
         else:
             is_best = False
         #utils.save_checkpoint(model, config.path, is_best)
-        utils.save_checkpoint_search(epoch, model, w_optim, alpha_optim, top1, config.path, is_best)
+        utils.save_checkpoint_search(epoch, model, w_optim, alpha_optim, metric_fc.kernel, top1, config.path, is_best)
         print("")
 
     logger.info("Final best Prec@1 = {:.4%}".format(best_top1))
@@ -157,6 +189,7 @@ def train(train_loader, val_loader, model, architect, w_optim, alpha_optim, lr, 
         # phase 1. child network step (w)
         w_optim.zero_grad()
         logits = model(trn_X)
+        logits = model.metric_fc(logits, trn_y)
         loss = model.criterion(logits, trn_y)
         loss.backward()
 
@@ -198,6 +231,7 @@ def validate(val_loader, model, epoch, cur_step):
             N = X.size(0)
 
             logits = model(X)
+            logits = model.metric_fc(logits, y)
             loss = model.criterion(logits, y)
 
             prec1 = utils.accuracy(logits, y, topk=(1,))

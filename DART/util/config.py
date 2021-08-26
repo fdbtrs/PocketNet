@@ -57,6 +57,11 @@ class SearchConfig(BaseConfig):
         parser.add_argument('--workers', type=int, default=4, help='# of workers')
         parser.add_argument('--alpha_lr', type=float, default=12e-4, help='lr for alpha')                     # 0.1 / 0.21
         parser.add_argument('--alpha_weight_decay', type=float, default=1e-3, help='weight decay for alpha')
+        parser.add_argument('--root', type=str, default="data/faces_webface_112x112", help='dataset root dir')
+        parser.add_argument('--image_channels', type=int, default=3, help='')
+        parser.add_argument('--n_classes', type=int, default=10571, help='')
+
+
 
         return parser
 
