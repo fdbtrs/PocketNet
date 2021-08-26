@@ -13,7 +13,7 @@ from torch.nn import CrossEntropyLoss, MSELoss
 
 from utils import losses
 from config.config import config as cfg
-from dataset import MXFaceDataset, DataLoaderX
+from utils.dataset import MXFaceDataset, DataLoaderX
 from utils.utils_callbacks import CallBackVerification, CallBackLoggingKD, CallBackModelCheckpointKD
 from utils.utils_logging import AverageMeter, init_logging
 
@@ -47,6 +47,17 @@ def main(args):
         local_rank=local_rank, dataset=trainset, batch_size=cfg.batch_size,
         sampler=train_sampler, num_workers=0, pin_memory=True, drop_last=True)
 
+    # load teacher model
+    backbone_teacher = iresnet100(num_features=cfg.embedding_size).to(local_rank)
+    try:
+        backbone_teacher_pth = os.path.join(cfg.teacher_pth, str(cfg.teacher_global_step) + "backbone.pth")
+        backbone_teacher.load_state_dict(torch.load(backbone_teacher_pth, map_location=torch.device(local_rank)))
+
+        if rank == 0:
+            logging.info("backbone teacher loaded successfully!")
+    except (FileNotFoundError, KeyError, IndexError, RuntimeError):
+        logging.info("load teacher backbone init, failed!")
+
     # load student model
     genotype = gt.from_str(cfg.genotypes["softmax_casia"])
     backbone_student = AugmentCNN(C=cfg.channel, n_layers=cfg.n_layers, genotype=genotype, stem_multiplier=4, emb=cfg.embedding_size).to(local_rank)
@@ -71,13 +82,15 @@ def main(args):
         except (FileNotFoundError, KeyError, IndexError, RuntimeError):
             logging.info("load student backbone resume init, failed!")
 
-
-
     #for ps in backbone_teacher.parameters():
     #    dist.broadcast(ps, 0)
 
     for ps in backbone_student.parameters():
         dist.broadcast(ps, 0)
+
+    backbone_teacher = DistributedDataParallel(
+        module=backbone_teacher, broadcast_buffers=False, device_ids=[local_rank])
+    backbone_teacher.eval()
 
     backbone_student = DistributedDataParallel(
         module=backbone_student, broadcast_buffers=False, device_ids=[local_rank])
@@ -86,6 +99,10 @@ def main(args):
     # get header
     if args.loss == "ArcFace":
         header = losses.ArcFace(in_features=cfg.embedding_size, out_features=cfg.num_classes, s=cfg.s, m=cfg.m).to(local_rank)
+    #elif args.loss == "CosFace":
+    #    header = losses.MarginCosineProduct(in_features=cfg.embedding_size, out_features=cfg.num_classes, s=64, m=cfg.margin).to(local_rank)
+    #elif args.loss == "Softmax":
+    #    header = losses.ArcFace(in_features=cfg.embedding_size, out_features=cfg.num_classes, s=64.0, m=0).to(local_rank)
     else:
         print("Header not implemented")
    
@@ -150,31 +167,11 @@ def main(args):
     loss1 = AverageMeter()
     loss2 = AverageMeter()
     global_step = cfg.global_step
-    w = 100
+
     for epoch in range(start_epoch, cfg.num_epoch):
         train_sampler.set_epoch(epoch)
-
-        # load teacher weights for specific epoch
-        backbone_teacher = iresnet100(num_features=cfg.embedding_size).to(local_rank)
-        try:
-            backbone_teacher_pth = os.path.join(cfg.teacher_pth, str((epoch + 1)*11372) + "backbone.pth")
-            backbone_teacher.load_state_dict(torch.load(backbone_teacher_pth, map_location=torch.device(local_rank)))
-
-            if rank == 0:
-                logging.info("backbone teacher loaded for epoch {} successfully!".format(epoch))
-        except (FileNotFoundError, KeyError, IndexError, RuntimeError):
-            logging.info("load teacher backbone for epoch {} init, failed!".format(epoch))
-            break
-
-        backbone_teacher = DistributedDataParallel(
-            module=backbone_teacher, broadcast_buffers=False, device_ids=[local_rank]
-        )
-        backbone_teacher.eval()
-
-
         for step, (img, label) in enumerate(train_loader):
             global_step += 1
-
             img = img.cuda(local_rank, non_blocking=True)
             label = label.cuda(local_rank, non_blocking=True)
 
@@ -212,12 +209,12 @@ def main(args):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='PoketNet Training with multi-step knowledge distillation ')
+    parser = argparse.ArgumentParser(description='PoketNet Training with template knowledge distillation')
     parser.add_argument('--local_rank', type=int, default=0, help='local_rank')
     parser.add_argument('--network_student', type=str, default="dartFaceNet", help="backbone of student network")
     parser.add_argument('--network_teacher', type=str, default="iresnet100", help="backbone of teacher network")
     parser.add_argument('--loss', type=str, default="ArcFace", help="loss function")
     parser.add_argument('--pretrained_student', type=int, default=0, help="use pretrained student model for KD")
-    parser.add_argument('--resume', type=int, default=0, help="resume training")
+    parser.add_argument('--resume', type=int, default=1, help="resume training")
     args_ = parser.parse_args()
     main(args_)

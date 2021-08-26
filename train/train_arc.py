@@ -13,7 +13,7 @@ from torch.nn import CrossEntropyLoss
 
 from utils import losses
 from config.config import config as cfg
-from dataset import MXFaceDataset, DataLoaderX
+from utils.dataset import MXFaceDataset, DataLoaderX
 from utils.utils_callbacks import CallBackVerification, CallBackModelCheckpointKD, CallBackLogging
 from utils.utils_logging import AverageMeter, init_logging
 
