@@ -1,0 +1,16 @@
+pytorch
+torchvision
+sklearn
+scipy
+tensorboard
+graphviz
+
+--------------------------
+#installations for darts
+conda create --name darts python=3.8
+conda install pytorch torchvision cudatoolkit=10.2 -c pytorch
+conda install -c anaconda scipy
+conda install -c anaconda scikit-learn
+conda install -c conda-forge tensorboard
+conda install python-graphviz
+conda install -c conda-forge pytorch-model-summary

@@ -13,7 +13,7 @@ from utils.utils_callbacks import CallBackVerification
 from utils.utils_logging import init_logging
 
 sys.path.append('/root/xy/work_dir/xyface/')
-from config.config import config as cfg
+from util.config import config as cfg
 
 
 

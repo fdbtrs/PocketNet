@@ -13,7 +13,7 @@ import sklearn
 from sklearn.preprocessing import normalize
 import torch
 
-from config.config import config as cfg
+from util.config import config as cfg
 
 from backbones.augment_cnn import AugmentCNN 
 import backbones.genotypes as gt 

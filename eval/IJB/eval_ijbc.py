@@ -12,7 +12,7 @@ import timeit
 import sklearn
 import argparse
 from sklearn.metrics import roc_curve, auc
-from config.config import config as cfg
+from util.config import config as cfg
 
 from menpo.visualize.viewmatplotlib import sample_colours_from_colourmap
 from prettytable import PrettyTable

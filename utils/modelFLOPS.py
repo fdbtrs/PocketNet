@@ -2,7 +2,7 @@ from backbones.augment_cnn import AugmentCNN
 from backbones import genotypes as gt
 
 from pytorch_model_summary import summary
-from config.config import config as cfg
+from util.config import config as cfg
 
 import torch
 from torch.autograd import Variable

@@ -9,7 +9,7 @@ import numpy as np
 import argparse
 import struct
 
-from config.config import config as cfg
+from util.config import config as cfg
 
 #feature_dim = 128 # change 512 / 256 / 128
 feature_dim = cfg.embedding_size
