@@ -12,6 +12,7 @@ Paper on arxiv: [arxiv](https://arxiv.org/abs/2108.10710)
 ### Face recognition  model training 
 Download [MS1MV2](https://drive.google.com/file/d/1SXS4-Am3bsKSK615qbYdbA_FMVh3sAvR/view?usp=sharing) dataset from [insightface](https://github.com/deepinsight/insightface/tree/master/recognition/_datasets_) on strictly follow the licence distribution
 Eaxtract the dataset and place it in the data folder
+Rename the config/config_xxxxxx.py to config/config.py
 1. Train PocketNet with ArcFace loss
    + ./train.sh
 2. Train PocketNet with template knowledge distillation
@@ -32,6 +33,8 @@ Eaxtract the dataset and place it in the data folder
 - [x] Training configuration
 - [ ] Add NAS code
 - [ ] Add evaluation results
+- [ ] Add requirements
+
  
  
 If you use any of the provided code in this repository, please cite the following paper:

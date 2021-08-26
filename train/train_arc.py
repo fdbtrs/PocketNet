@@ -23,12 +23,12 @@ import backbones.genotypes as gt
 torch.backends.cudnn.benchmark = True
 
 def main(args):
+
     dist.init_process_group(backend='nccl', init_method='env://')
     local_rank = args.local_rank
     torch.cuda.set_device(local_rank)
     rank = dist.get_rank()
     world_size = dist.get_world_size()
-
     if not os.path.exists(cfg.output) and rank == 0:
         os.makedirs(cfg.output)
     else:
@@ -179,5 +179,7 @@ if __name__ == "__main__":
     parser.add_argument('--loss', type=str, default="ArcFace", help="loss function")
     parser.add_argument('--pretrained_student', type=int, default=0, help="use pretrained")
     parser.add_argument('--resume', type=int, default=1, help="resume training")
+    parser.add_argument('--config', type=str, default="config/config_PocketNetM128.py", help="configuration path")
+
     args_ = parser.parse_args()
     main(args_)
