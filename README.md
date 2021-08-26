@@ -10,6 +10,7 @@ Paper on arxiv: [arxiv](https://arxiv.org/abs/2108.10710)
 
 
 ### Model Training 
+Download [MS1MV2](https://drive.google.com/file/d/1SXS4-Am3bsKSK615qbYdbA_FMVh3sAvR/view?usp=sharing) dataset from [insightface](https://github.com/deepinsight/insightface/tree/master/recognition/_datasets_) on strictly follow the licence distribution
 1. Train PocketNet with ArcFace loss
    + ./train.sh
 
