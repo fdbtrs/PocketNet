@@ -5,7 +5,7 @@
 ## This is the official repository of the paper: PocketNet: Extreme Lightweight Face Recognition Network using Neural Architecture Search and  Multi-Step Knowledge Distillation
 [arxiv](https://arxiv.org/abs/2108.10710)
 
-!(evaluation)[https://github.com/fdbtrs/PocketNet/blob/main/logs/tradeoff.png?raw=true]
+!(evaluation)[https://raw.githubusercontent.com/fdbtrs/PocketNet/main/logs/tradeoff.png]
 
 
 ### Model Training 
