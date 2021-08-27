@@ -3,8 +3,6 @@ from easydict import EasyDict as edict
 config = edict()
 config.dataset = "emoreKD"
 config.embedding_size = 128
-config.sample_rate = 1
-config.fp16 = False
 config.momentum = 0.9
 config.weight_decay = 5e-4
 config.batch_size = 128
