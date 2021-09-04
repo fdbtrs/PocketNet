@@ -2,11 +2,18 @@
 
 
 ### To-do 
-- [ ] Update configuration file
-- [ ] Update augment_cnn
-- [ ] remove static varibale
+- [x] Update configuration file
+- [x] Update augment_cnn
+- [x] remove static varibale
 
 
+Extract the dataset and place it in the data folder
+
+Set search configurations in util/config.py, and path to dataset folder (config.root).
+In utils/config.py, specify the name of the search with config.name
+1. Run search algorithm search.py
+   + ./search.sh
+2. Go to searchs/{config.name}/ to see the result of the search
 
 
 ## Reference

@@ -6,7 +6,12 @@ import mxnet as mx
 import numpy as np
 import torch
 from torch.utils.data import Dataset
+from torchvision.datasets import CIFAR10
 from torchvision import transforms
+
+from util.config import config as cfg
+
+from pprint import pprint
 
 class MXFaceDataset(Dataset):
     def __init__(self, root_dir, transform):
@@ -37,53 +42,77 @@ class MXFaceDataset(Dataset):
             sample = self.transform(sample)
         return sample, label
 
+    def __get_classes__(self):
+        classes = []
+        for idx in range(0, len(self.imgidx)):
+            s = self.imgrec.read_idx(idx)
+            header, img = mx.recordio.unpack(s)
+            label = header.label
+            if not isinstance(label, numbers.Number):
+                label = label[0]
+            classes.append(int(label))
+        return classes
+
     def __len__(self):
         return len(self.imgidx)
 
-CASIA = "../../../data/fboutros/faces_webface_112x112"
-
-def get_train_dataset():
+def get_train_dataset(root, name):
     """ returns only the train dataset """
 
-    train_trans = transforms.Compose ([
-        transforms.ToPILImage(),
-        transforms.Resize(128), #  128x128
-        transforms.RandomCrop(112), # 
-        transforms.RandomHorizontalFlip(), # randomly flipping
-        transforms.ToTensor(),
-        transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
-    ])
+    if name == "CASIA":
+        train_trans = transforms.Compose ([
+            transforms.ToPILImage(),
+            transforms.Resize(128), #  128x128
+            transforms.RandomCrop(112), # 
+            transforms.RandomHorizontalFlip(), # randomly flipping
+            transforms.ToTensor(),
+            transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
+        ])
 
-    root = CASIA
+        trn_data = MXFaceDataset(root_dir=root, transform=train_trans)
+    elif name == "CIFAR-10":
+        train_trans = transforms.Compose ([
+            transforms.Resize(38), #  128x128
+            transforms.RandomCrop(32), # 
+            transforms.RandomHorizontalFlip(), # randomly flipping
+            transforms.ToTensor(),
+            transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
+        ])
+        trn_data = CIFAR10(root=root, train=True, download=True, transform=train_trans)
+    else:
+        trn_data = None
 
-    trn_data = MXFaceDataset(root_dir=root, transform=train_trans)
-    input_channels = 3
-    input_size = 112
+    input_channels = cfg.input_channels
+    input_size = cfg.input_size
 
-    n_classes = 10571
-
-    # assert statements for classes, input_size
-    #assert len(trn_data.classes) == n_classes
-    #assert trn_data[0][0].shape[1] == 112
+    n_classes = cfg.n_classes
 
     return input_size, input_channels, n_classes, trn_data
 
-def get_casia_without_crop():
+def get_dataset_without_crop(root, name):
     trans = transforms.Compose ([
         transforms.ToTensor(),
         transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
     ])
 
-    root = CASIA
-
-    data = MXFaceDataset(root_dir=root, transform=trans)
+    if name == "CASIA":
+        data = MXFaceDataset(root_dir=root, transform=trans)
+    elif name == "CIFAR-10":
+        data = CIFAR10(root=root, train=True, download=True, transform=trans)
+    else:
+        trn_data = None
 
     return data
 
 # Tested
-def get_train_val_split(data_idx, data_classes, val_split=0.2):
+def get_train_val_split(data, name, val_split=0.5):
     """ returns indexes of a split of the dataset in a stratified manner """
+    if name == "CASIA":
+        targets = data.__get_classes__()
+        targets = targets[1::]
+    elif name == "CIFAR-10":
+        targets = data.targets
 
-    train_idx, valid_idx = train_test_split(data_idx, test_size=val_split, stratify=data_classes)
+    train_idx, valid_idx = train_test_split(np.arange(len(targets)), test_size=val_split, stratify=targets)
 
     return train_idx, valid_idx

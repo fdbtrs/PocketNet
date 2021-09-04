@@ -3,7 +3,43 @@ import argparse
 import os
 from models import genotypes as gt
 from functools import partial
-import torch
+
+from easydict import EasyDict as edict
+
+config = edict()
+config.name = "searchPocketNet"
+config.batch_size = 128
+config.w_lr = 0.1
+config.w_lr_min = 0.004
+config.w_momentum = 0.9
+config.w_weight_decay = 3e-4
+config.w_grad_clip = 5.
+config.print_freq = 50
+config.epochs = 50
+config.init_channels = 16
+config.layers = 8
+config.seed = 2
+config.workers = 4
+config.alpha_lr = 12e-4
+config.alpha_weight_decay = 1e-3
+config.input_channels = 3
+config.stem_multiplier = 3
+config.n_nodes = 4
+
+config.dataset = "CASIA" # CASIA | CIFAR-10
+
+config.path = os.path.join('searchs_output', config.name)
+config.plot_path = os.path.join(config.path, 'plots')
+
+if config.dataset == "CASIA":
+    config.input_size = 112
+    config.root = ""
+    config.n_classes = 10572
+elif config.dataset == "CIFAR-10":
+    config.input_size = 32
+    config.root = ""
+    config.n_classes = 10000
+
 
 def get_parser(name):
     """ make default formatted parser """
@@ -12,64 +48,19 @@ def get_parser(name):
     parser.add_argument = partial(parser.add_argument, help=' ')
     return parser
 
-def parse_gpus(gpus):
-    if gpus == 'all':
-        return list(range(torch.cuda.device_count()))
-    else:
-        return [int(s) for s in gpus.split(',')]
-
 # Base class to store and print configurations
-class BaseConfig(argparse.Namespace):
-    def print_params(self, prtf=print):
-        """ prints configs """
-        prtf("")
-        prtf("Parameters:")
-        for attr, value in sorted(vars(self).items()):
-            prtf("{}={}".format(attr.upper(), value))
-        prtf("")
+def print_params(prtf=print):
+    """ prints configs """
+    prtf("")
+    prtf("Parameters:")
+    for attr, value in sorted(config.items()):
+        prtf("{}={}".format(attr.upper(), value))
+    prtf("")
 
-    def as_markdown(self):
-        """ Returns configs as markdown format """
-        text = "|name|value|  \n|-|-|  \n"
-        for attr, value in sorted(vars(self).items()):
-            text += "|{}|{}|  \n".format(attr, value)
-        
-        return text
-
-# Class to store config data of search
-class SearchConfig(BaseConfig):
-    def build_parser(self):
-        parser = get_parser("Search config")
-        parser.add_argument('--name', required=True)
-        parser.add_argument('--dataset', default='CASIA',help='CASIA')
-        parser.add_argument('--batch_size', type=int, default=128, help='batch size') # standard 64
-        parser.add_argument('--w_lr', type=float, default=0.1, help='lr for weights') # 0.1 / 0.21 / 0.025
-        parser.add_argument('--w_lr_min', type=float, default=0.004, help='minimum lr for weights')
-        parser.add_argument('--w_momentum', type=float, default=0.9, help='momentum for weights')
-        parser.add_argument('--w_weight_decay', type=float, default=3e-4, help='weight decay for weights')
-        parser.add_argument('--w_grad_clip', type=float, default=5., help='gradient clipping for weights')
-        parser.add_argument('--print_freq', type=int, default=50, help='print frequency')
-        parser.add_argument('--gpus', default='all', help='gpu device ids seperated by comma. "all" indicates use all gpu.')
-        parser.add_argument('--epochs', type=int, default=10, help='# of training epochs.')
-        parser.add_argument('--init_channels', type=int, default=16)
-        parser.add_argument('--layers', type=int, default=8, help='# of layers')
-        parser.add_argument('--seed', type=int, default=2, help='random seed')
-        parser.add_argument('--workers', type=int, default=4, help='# of workers')
-        parser.add_argument('--alpha_lr', type=float, default=12e-4, help='lr for alpha')                     # 0.1 / 0.21
-        parser.add_argument('--alpha_weight_decay', type=float, default=1e-3, help='weight decay for alpha')
-        parser.add_argument('--root', type=str, default="data/faces_webface_112x112", help='dataset root dir')
-        parser.add_argument('--image_channels', type=int, default=3, help='')
-        parser.add_argument('--n_classes', type=int, default=10571, help='')
-
-
-
-        return parser
-
-    def __init__(self):
-        parser = self.build_parser()
-        args = parser.parse_args()
-        super().__init__(**vars(args))
-
-        self.path = os.path.join('searchs_output', self.name)
-        self.plot_path = os.path.join(self.path, 'plots')
-        self.gpus = parse_gpus(self.gpus)
+def as_markdown():
+    """ Returns configs as markdown format """
+    text = "|name|value|  \n|-|-|  \n"
+    for attr, value in sorted(config.items()):
+        text += "|{}|{}|  \n".format(attr, value)
+    
+    return text
