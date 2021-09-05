@@ -8,63 +8,12 @@ from torch.nn.parallel._functions import Broadcast
 import logging
 import math
 
-def l2_norm(input,axis=1):
-    norm = torch.norm(input,2,axis,True)
-    output = torch.div(input, norm)
-    return output
-
-'''https://github.com/TreB1eN/InsightFace_Pytorch/blob/master/model.py'''
-class ArcFace(nn.Module):
-    # implementation of additive margin softmax loss in https://arxiv.org/abs/1801.05599    
-    def __init__(self, embedding_size=512, classnum=51332,  s=64., m=0.5, init_weights=None):
-        super(ArcFace, self).__init__()
-        self.classnum = classnum
-        if init_weights is None:
-            self.kernel = nn.Parameter(torch.Tensor(embedding_size,classnum))
-        else:
-            self.kernel = nn.Parameter(torch.transpose(init_weights, 0, 1))
-        # initial kernel
-        self.kernel.data.uniform_(-1, 1).renorm_(2,1,1e-5).mul_(1e5)
-        self.m = m # the margin value, default is 0.5
-        self.s = s # scalar value default is 64, see normface https://arxiv.org/abs/1704.06369
-        self.cos_m = math.cos(m)
-        self.sin_m = math.sin(m)
-        self.mm = self.sin_m * m  # issue 1
-        self.threshold = math.cos(math.pi - m)
-
-    def forward(self, embbedings, label):
-        # weights norm
-        nB = len(embbedings)
-        kernel_norm = l2_norm(self.kernel,axis=0)
-        # cos(theta+m)
-        cos_theta = torch.mm(embbedings,kernel_norm)
-#         output = torch.mm(embbedings,kernel_norm)
-        cos_theta = cos_theta.clamp(-1,1) # for numerical stability
-        cos_theta_2 = torch.pow(cos_theta, 2)
-        sin_theta_2 = 1 - cos_theta_2
-        sin_theta = torch.sqrt(sin_theta_2)
-        cos_theta_m = (cos_theta * self.cos_m - sin_theta * self.sin_m)
-        # this condition controls the theta+m should in range [0, pi]
-        #      0<=theta+m<=pi
-        #     -m<=theta<=pi-m
-        cond_v = cos_theta - self.threshold
-        cond_mask = cond_v <= 0
-        keep_val = (cos_theta - self.mm) # when theta not in [0,pi], use cosface instead
-        cos_theta_m[cond_mask] = keep_val[cond_mask]
-        output = cos_theta * 1.0 # a little bit hacky way to prevent in_place operation on cos_theta
-        idx_ = torch.arange(0, nB, dtype=torch.long)
-        output[idx_, label] = cos_theta_m[idx_, label]
-        output *= self.s # scale up in order to make softmax work, first introduced in normface
-        return output
-
-
 def broadcast_list(l, device_ids):
     """ Broadcasting list """
     l_copies = Broadcast.apply(device_ids, *l)
     l_copies = [l_copies[i:i+len(l)] for i in range(0, len(l_copies), len(l))]
 
     return l_copies
-
 
 class SearchCNN(nn.Module):
     """ Search CNN model """
@@ -131,7 +80,7 @@ class SearchCNN(nn.Module):
             nn.BatchNorm2d(128)
         )
 
-        #self.linear = nn.Linear(128, n_classes)
+        self.linear = nn.Linear(128, n_classes)
 
     def forward(self, x, weights_normal, weights_reduce):
         s0 = s1 = self.stem(x)
@@ -140,29 +89,21 @@ class SearchCNN(nn.Module):
             weights = weights_reduce if cell.reduction else weights_normal
             s0, s1 = s1, cell(s0, s1, weights)
 
-        #out = self.gap(s1)
-        #out = out.view(out.size(0), -1) # flatten
-        #logits = self.linear(out)
-
         out = self.tail(s1)
         out = out.view(out.size(0), -1) # flatten
-        #out = self.linear(out)
+        out = self.linear(out)
 
-        return l2_norm(out)
-        #return out
+        return out
 
 
 class SearchCNNController(nn.Module):
     """ SearchCNN controller supporting multi-gpu """
-    def __init__(self, C_in, C, n_classes, n_layers, metric_fc, criterion, n_nodes=4, stem_multiplier=3,
-                 device_ids=None):
+    def __init__(self, C_in, C, n_classes, n_layers, criterion, n_nodes=4, stem_multiplier=3):
         super().__init__()
         self.n_nodes = n_nodes
         self.criterion = criterion
-        self.metric_fc = metric_fc
 
-        if device_ids is None:
-            device_ids = list(range(torch.cuda.device_count()))
+        device_ids = list(range(torch.cuda.device_count()))
         self.device_ids = device_ids
 
         # initialize architect parameters: alphas
@@ -206,7 +147,6 @@ class SearchCNNController(nn.Module):
 
     def loss(self, X, y):
         logits = self.forward(X)
-        logits = self.metric_fc(logits, y)
         return self.criterion(logits, y)
 
     def print_alphas(self, logger):

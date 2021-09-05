@@ -79,25 +79,7 @@ def accuracy(output, target, topk=(1,)):
 
     return res
 
-def save_checkpoint_aug(epoch, model, optimizer, loss, ckpt_dir, is_best=False):
-    try:
-        state_dict = model.module.state_dict()
-    except AttributeError:
-        state_dict = model.state_dict()
-    
-    filename = os.path.join(ckpt_dir, 'checkpoint.pth.tar')
-    torch.save({
-        'epoch': epoch,
-        'model_state_dict': state_dict,
-        'optimizer_state_dict': optimizer.state_dict(),
-        'loss': loss,
-    }, filename)
-
-    if is_best:
-        best_filename = os.path.join(ckpt_dir, 'best.pth.tar')
-        shutil.copyfile(filename, best_filename)
-
-def save_checkpoint_search(epoch, model, optimizerW, optimizerA, metric_fc, loss, ckpt_dir, is_best=False):
+def save_checkpoint_search(epoch, model, optimizerW, optimizerA, loss, ckpt_dir, is_best=False):
     try:
         state_dict = model.module.state_dict()
     except AttributeError:
@@ -110,7 +92,6 @@ def save_checkpoint_search(epoch, model, optimizerW, optimizerA, metric_fc, loss
         'optimizer_w_state_dict': optimizerW.state_dict(),
         'optimizer_a_state_dict': optimizerA.state_dict(),
         'loss': loss,
-        'metric_fc': metric_fc,
     }, filename)
 
     if is_best:
