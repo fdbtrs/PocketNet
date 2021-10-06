@@ -4,7 +4,6 @@
 ### To-do 
 - [x] Update configuration file
 - [x] Update augment_cnn
-- [x] remove static varibale
 
 
 Extract the dataset and place it in the data folder

@@ -6,19 +6,18 @@ import time
 import torch
 import torch.distributed as dist
 import torch.nn.functional as F
-from torch.nn.parallel.distributed import DistributedDataParallel
 import torch.utils.data.distributed
-from torch.nn.utils import clip_grad_norm_
 from torch.nn import CrossEntropyLoss
+from torch.nn.parallel.distributed import DistributedDataParallel
+from torch.nn.utils import clip_grad_norm_
 
-from utils import losses
+import backbones.genotypes as gt
+from backbones.augment_cnn import AugmentCNN
 from config.config import config as cfg
+from utils import losses
 from utils.dataset import MXFaceDataset, DataLoaderX
 from utils.utils_callbacks import CallBackVerification, CallBackModelCheckpointKD, CallBackLogging
 from utils.utils_logging import AverageMeter, init_logging
-
-from backbones.augment_cnn import AugmentCNN
-import backbones.genotypes as gt
 
 torch.backends.cudnn.benchmark = True
 

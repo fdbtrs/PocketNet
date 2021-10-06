@@ -19,8 +19,7 @@ from util.visualize import plot
 
 # set device
 device = "cuda" if torch.cuda.is_available() else "cpu"
-#device = "cpu"
-device = torch.device(device) # maybe this is redundant
+device = torch.device(device)
 
 # tensorboard
 writer = SummaryWriter(log_dir=os.path.join(cfg.path, "tb"))
