@@ -13,7 +13,7 @@ from torch.nn.utils import clip_grad_norm_
 
 import backbones.genotypes as gt
 from backbones.augment_cnn import AugmentCNN
-from config.config import config as cfg
+from config.config_example import config as cfg
 from utils import losses
 from utils.dataset import MXFaceDataset, DataLoaderX
 from utils.utils_callbacks import CallBackVerification, CallBackModelCheckpointKD, CallBackLogging

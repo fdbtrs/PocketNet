@@ -6,8 +6,10 @@
 - [x] Update augment_cnn
 
 
-Extract the dataset and place it in the data folder
+Unzipped the  dataset and place it in the data folder
+The aligned and cropped version of CASIA-WebFace can be downloaded it from [insightface](https://github.com/deepinsight/insightface/tree/master/recognition/_datasets_)
 
+The database are aligned based on the util/align_trans.py
 Set search configurations in util/config.py, and path to dataset folder (config.root).
 In utils/config.py, specify the name of the search with config.name
 1. Run search algorithm search.py

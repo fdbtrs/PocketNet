@@ -13,6 +13,9 @@ config.global_step=0
 config.s=64.0
 config.m=0.5
 
+
+config.test_output="eval"
+
 config.genotypes = dict({
         "softmax_cifar10": "Genotype(normal=[[('dw_conv_7x7', 0), ('dw_conv_3x3', 1)], [('dw_conv_1x1', 1), ('dw_conv_1x1', 2)], [('max_pool_3x3', 2), ('dw_conv_7x7', 3)], [('dw_conv_5x5', 4), ('max_pool_3x3', 0)]], normal_concat=range(2, 6), reduce=[[('max_pool_3x3', 0), ('dw_conv_7x7', 1)], [('max_pool_3x3', 0), ('max_pool_3x3', 1)], [('max_pool_3x3', 0), ('max_pool_3x3', 2)], [('max_pool_3x3', 0), ('max_pool_3x3', 1)]], reduce_concat=range(2, 6))",
         "softmax_casia": "Genotype(normal=[[('dw_conv_3x3', 0), ('dw_conv_1x1', 1)], [('dw_conv_3x3', 2), ('dw_conv_5x5', 0)], [('dw_conv_3x3', 3), ('dw_conv_3x3', 0)], [('dw_conv_3x3', 4), ('skip_connect', 0)]], normal_concat=range(2, 6), reduce=[[('dw_conv_3x3', 1), ('dw_conv_7x7', 0)], [('skip_connect', 2), ('dw_conv_5x5', 1)], [('max_pool_3x3', 0), ('skip_connect', 2)], [('max_pool_3x3', 0), ('max_pool_3x3', 1)]], reduce_concat=range(2, 6))"    })
