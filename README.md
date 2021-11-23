@@ -61,24 +61,3 @@ The code of NAS is available under NAS
 - [x] Add evaluation results
 
  
- 
-If you use any of the provided code in this repository, please cite the following paper:
-```
-@misc{boutros2021pocketnet,
-      title={PocketNet: Extreme Lightweight Face Recognition Network using Neural Architecture Search and Multi-Step Knowledge Distillation}, 
-      author={Fadi Boutros and Patrick Siebke and Marcel Klemt and Naser Damer and Florian Kirchbuchner and Arjan Kuijper},
-      year={2021},
-      eprint={2108.10710},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
-}
-```
-
-
-## License
-
-```
-This project is licensed under the terms of the Attribution-NonCommercial-ShareAlike 4.0 
-International (CC BY-NC-SA 4.0) license. 
-Copyright (c) 2021 Fraunhofer Institute for Computer Graphics Research IGD Darmstadt
-```
