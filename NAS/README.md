@@ -22,16 +22,6 @@ In utils/config.py, specify the name of the search with config.name
 [https://github.com/khanrc/pt.darts](https://github.com/khanrc/pt.darts)
 
 ```
-@misc{boutros2021pocketnet,
-      title={PocketNet: Extreme Lightweight Face Recognition Network using Neural Architecture Search and Multi-Step Knowledge Distillation}, 
-      author={Fadi Boutros and Patrick Siebke and Marcel Klemt and Naser Damer and Florian Kirchbuchner and Arjan Kuijper},
-      year={2021},
-      eprint={2108.10710},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
-}
-```
-```
 @inproceedings{DBLP:conf/iclr/LiuSY19,
   author    = {Hanxiao Liu and
                Karen Simonyan and
