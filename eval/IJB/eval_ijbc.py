@@ -26,7 +26,7 @@ warnings.filterwarnings("ignore")
 parser = argparse.ArgumentParser(description='do ijb test')
 # general
 parser.add_argument('--model-prefix', default='', help='path to load model.')
-parser.add_argument('--image-path', default='/data/fboutros/IJB_release/IJB_release/IJBB', type=str, help='')
+parser.add_argument('--image-path', default='./data/IJB_release/IJB_release/IJBB', type=str, help='')
 parser.add_argument('--result-dir', default='.', type=str, help='')
 parser.add_argument('--batch-size', default=512, type=int, help='')
 parser.add_argument('--network', default='iresnet50', type=str, help='')
