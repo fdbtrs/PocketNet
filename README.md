@@ -32,7 +32,15 @@ Rename the config/config_xxxxxx.py to config/config.py
 
 
 
-All code has been trained and tested using  Pytorch 1.7.1
+Intall the requirement from requirement.txt
+
+pip install -r requirements.txt
+
+All code are trained and tested using PyTorch 1.7.1
+
+Details are under (Torch)[https://pytorch.org/get-started/locally/]
+
+
 
 ## Face recognition evaluation
 ##### evaluation on LFW, AgeDb-30, CPLFW, CALFW and CFP-FP: 
