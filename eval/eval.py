@@ -12,14 +12,14 @@ import backbones.genotypes as gt
 from utils.utils_callbacks import CallBackVerification
 from utils.utils_logging import init_logging
 
-from util.config import config as cfg
+from configs.config_PocketNetS128 import config as cfg
 
 
 if __name__ == "__main__":
     gpu_id = 0
     log_root = logging.getLogger()
-    if not (os.path.isdir(cfg.test_output)):
-        os.makedirs(cfg.test_output)
+    if not (os.path.isdir(cfg.output)):
+        os.makedirs(cfg.output)
     init_logging(log_root, 0, cfg.test_output,logfile="test.log")
     callback_verification = CallBackVerification(1, 0, cfg.val_targets, cfg.rec)
     output_folder=cfg.output
