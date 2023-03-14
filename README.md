@@ -6,6 +6,8 @@
 #### PocketNet: Extreme Lightweight Face Recognition Network using Neural Architecture Search and  Multi-Step Knowledge Distillation
 Paper on arxiv: [arxiv](https://arxiv.org/abs/2108.10710)
 
+Accepted at IEEE ACCESS Journal
+
 ![evaluation](https://raw.githubusercontent.com/fdbtrs/PocketNet/main/logs/tradeoff.png)
 
 
@@ -65,13 +67,21 @@ The code of NAS is available under NAS
  
 If you use any of the provided code in this repository, please cite the following paper:
 ```
-@misc{boutros2021pocketnet,
-      title={PocketNet: Extreme Lightweight Face Recognition Network using Neural Architecture Search and Multi-Step Knowledge Distillation}, 
-      author={Fadi Boutros and Patrick Siebke and Marcel Klemt and Naser Damer and Florian Kirchbuchner and Arjan Kuijper},
-      year={2021},
-      eprint={2108.10710},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
+@article{boutros2021pocketnet,
+  author    = {Fadi Boutros and
+               Patrick Siebke and
+               Marcel Klemt and
+               Naser Damer and
+               Florian Kirchbuchner and
+               Arjan Kuijper},
+  title     = {PocketNet: Extreme Lightweight Face Recognition Network Using Neural
+               Architecture Search and Multistep Knowledge Distillation},
+  journal   = {{IEEE} Access},
+  volume    = {10},
+  pages     = {46823--46833},
+  year      = {2022},
+  url       = {https://doi.org/10.1109/ACCESS.2022.3170561},
+  doi       = {10.1109/ACCESS.2022.3170561},
 }
 ```
 
